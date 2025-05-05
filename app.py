@@ -1,42 +1,43 @@
-import streamlit as st
 import importlib.metadata as meta
+
+import streamlit as st
 
 from st_copy import copy_button
 
 # Base settings
-st.set_page_config(page_title="Copy Button Demo • Chat API")
+st.set_page_config(page_title='Copy Button Demo • Chat API')
 
 # Sidebar
 with st.sidebar:
-    st.title("st‑copy • demo")
+    st.title('st‑copy • demo')
 
     st.markdown(
-        "🔗 **Source code**: "
-        "[alex‑feel/st‑copy](https://github.com/alex-feel/st-copy)"
+        '🔗 **Source code**: '
+        '[alex‑feel/st‑copy](https://github.com/alex-feel/st-copy)'
     )
 
-    version = meta.version("st-copy")
+    version = meta.version('st-copy')
     st.markdown(
-        "[![PyPI](https://img.shields.io/pypi/v/st-copy.svg)]"
-        "(https://pypi.org/project/st-copy/)"
-    )
-
-    st.markdown(
-        "[![Python Version](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Falex-feel%2Fst-copy%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)]"
-        "(https://github.com/alex-feel/st-copy/blob/main/pyproject.toml)"
+        '[![PyPI](https://img.shields.io/pypi/v/st-copy.svg)]'
+        '(https://pypi.org/project/st-copy/)'
     )
 
     st.markdown(
-        "[![GitHub License](https://img.shields.io/github/license/alex-feel/st-copy)]"
-        "(https://github.com/alex-feel/st-copy/blob/main/LICENSE)"
+        '[![Python Version](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Falex-feel%2Fst-copy%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)]'
+        '(https://github.com/alex-feel/st-copy/blob/main/pyproject.toml)'
     )
 
-    install_cmd = f"pip install st-copy=={version}"
-    st.code(install_cmd, language="bash")
-    copy_button(install_cmd, key="sidebar‑install")
+    st.markdown(
+        '[![GitHub License](https://img.shields.io/github/license/alex-feel/st-copy)]'
+        '(https://github.com/alex-feel/st-copy/blob/main/LICENSE)'
+    )
 
-    st.markdown("---")
-    st.markdown("Made with 💚 for Streamlit Community")
+    install_cmd = f'pip install st-copy=={version}'
+    st.code(install_cmd, language='bash')
+    copy_button(install_cmd, key='sidebar‑install')
+
+    st.markdown('---')
+    st.markdown('Made with 💚 for Streamlit Community')
 
 # Main app
 st.title('Copy Button Demo • Chat API')
@@ -118,3 +119,30 @@ with st.chat_message('assistant'):
         copied_label='Custom "Copied!" text',
         key='Any key',
     )
+
+# Chat
+if 'demo_history' not in st.session_state:
+    st.session_state.demo_history = []
+
+for idx, (role, text) in enumerate(st.session_state.demo_history):
+    container = st.chat_message(role)
+    with container:
+        st.write(text)
+        if role == 'human':
+            copy_button(
+                text,
+                tooltip='Copy your message',
+                key=f'copy_human_{idx}',
+            )
+        if role == 'assistant':
+            copy_button(
+                text,
+                tooltip='Copy assistant message',
+                key=f'copy_assistant_{idx}',
+            )
+
+if user_text := st.chat_input('Type something to test copy_button…'):
+    st.session_state.demo_history.append(('human', user_text))
+    assistant_text = 'This is a standard assistant response!'
+    st.session_state.demo_history.append(('assistant', assistant_text))
+    st.rerun()
